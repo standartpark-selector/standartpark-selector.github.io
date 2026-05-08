@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Standardpark-web конфигуратор</title>
+  <link rel="stylesheet" href="style/style.css">
+  <link rel="shortcut icon" href="img/logo.svg" type="image/x-icon">
+  <script type="module" src="scripts/index.js">
+  </script>
+  <script defer src="scripts/hint.js"></script>
+</head>
+
+<body>
+  <header class="noPrint">
+    <div class="wrap brand"><img id="logo"
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20fill='%23cccccc'/%3E%3Ctext%20x='50'%20y='50'%20text-anchor='middle'%20dy='.3em'%20fill='%23666666'%3ELogo%3C/text%3E%3C/svg%3E"
+        alt="Pump Selector Web Pro">
+      <div>
+        <h1>Standardpark</h1>
+        <p>web-конфигуратор</p>
+      </div>
+    </div>
+  </header>
+  <main class="wrap grid">
+    <section class="card noPrint">
+      <div class="tabs"><button class="tab active" data-tab="hydro">Подбор</button><button class="tab"
+          data-tab="direct">Поиск модели</button><button class="tab" data-tab="series">Серии</button></div>
+      <div id="hydroTab" class="controls">
+        <div class="field"><label>Q общий, м³/ч</label><input id="q" type="number" step="0.1" placeholder="например 15">
+        </div>
+        <div class="field"><label>H, м</label><input id="h" type="number" step="0.1" placeholder="например 30"></div>
+        <div class="field"><label>Статический напор, м</label><input id="staticHead" type="number" step="0.1" value="5">
+        </div>
+        <div class="field"><label>Рабочих насосов</label><input id="numPumps" type="number" min="1" max="10" value="1">
+        </div>
+        <div class="field full row"><button class="hydroTab_btn" id="findBtn">Подобрать</button><button
+            class=" hydroTab_btn secondary" id="clearBtn">Сброс</button><button class="hydroTab_btn secondary"
+            id="reportInfoBtn">Данные отчёта</button><button class="hydroTab_btn gray" id="printBtn">PDF /
+            печать</button></div>
+      </div>
+      <div id="directTab" class="controls" style="display:none">
+        <div class="field full"><label>Модель / часть названия</label><input id="modelSearch"
+            placeholder="50WQ15-30-3, IRG, ISW..."></div>
+      </div>
+      <div id="seriesTab" style="display:none"><input id="seriesSearch" placeholder="Поиск серии…"
+          style="margin-bottom:10px">
+        <div id="seriesBox" class="seriesBox"></div>
+        <div class="row" style="margin-top:10px"><button id="allSeries" class="secondary">Все</button><button
+            id="noneSeries" class="danger">Снять</button></div>
+      </div>
+      <div id="healthCard" class="health"></div>
+      <p class="small muted" id="stats"></p>
+    </section>
+    <section class="card">
+      <div class="row noPrint" style="justify-content:space-between;margin-bottom:10px">
+        <div><b>Результаты</b> <span id="resultCount" class="muted"></span></div>
+        <div class="small muted">Клик по строке — график и карточка</div>
+      </div>
+      <div class="tableWrap noPrint">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th data-sort="model">Модель</th>
+              <th data-sort="flow_m3h">
+                Q, м³/ч
+                <div class="help-icon" data-hint="номинальный объёмный расход жидкости">?</div>
+              </th>
+              <th data-sort="head_m">
+                H, м
+                <div class="help-icon" data-hint="напор">?</div>
+              </th>
+              <th data-sort="power_kw">
+                P, кВт
+                <div class="help-icon" data-hint="мощность мотора">?</div>
+              </th>
+              <th data-sort="suction_diam_mm">
+                Dвс
+                <div class="help-icon" data-hint="диаметр всасывающей трубы">?</div>
+              </th>
+              <th data-sort="discharge_diam_mm">
+                Dн
+                <div class="help-icon" data-hint="номинальный диаметр трубопровода">?</div>
+              </th>
+              <th data-sort="score">Точность</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <h2 class="reportOnly">Технический подбор насосного оборудования</h2>
+      <div class="chartPanel" style="margin-top:14px">
+        <div class="canvasBox"><canvas id="chart" width="1050" height="620"></canvas></div>
+        <aside id="detail" class="detail"></aside>
+      </div>
+      <section id="reportInfoBlock" class="reportOnly reportPanel"></section>
+    </section>
+  </main>
+  <div id="reportModal" class="modalBackdrop noPrint">
+    <div class="modal">
+      <h2>Информация для PDF отчёта</h2>
+      <p class="muted small">Данные сохраняются в браузере и попадут в печатный/PDF отчёт.</p>
+      <div class="controls">
+        <div class="field"><label>Менеджер</label><input id="ri_manager" placeholder="Фамилия И.О."></div>
+        <div class="field"><label>Номер запроса</label><input id="ri_requestNumber" placeholder="2024-001"></div>
+        <div class="field"><label>Система</label><input id="ri_systemName" placeholder="Водоснабжение, отопление...">
+        </div>
+        <div class="field"><label>Проект / объект</label><input id="ri_projectName" placeholder="Название проекта">
+        </div>
+        <div class="field"><label>Клиент</label><input id="ri_clientName" placeholder="Компания клиента"></div>
+        <div class="field"><label>Длина кабеля, м</label><input id="ri_cableLength" type="number" step="0.1"
+            placeholder="по умолчанию из базы"></div>
+        <div class="field full"><label>Контакты</label><textarea id="ri_contacts"
+            placeholder="Телефон, email, адрес..."></textarea></div>
+      </div>
+      <div class="reportActions"><button id="saveReportInfo">Сохранить</button><button class="secondary"
+          id="saveTemplateBtn">Скачать шаблон</button><button class="secondary" id="loadTemplateBtn">Загрузить
+          шаблон</button><button class="gray" id="closeReportInfo">Закрыть</button><input id="templateFile" type="file"
+          accept="application/json,.json"></div>
+    </div>
+  </div>
+  <div id="printReport" class="printReport"></div>
+</body>
+
+</html>
