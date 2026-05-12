@@ -74,8 +74,9 @@ function bind() {
     if (e.target.id === "reportModal") closeReportInfo();
   });
   $("printBtn").onclick = () => {
+    draw();
     buildPrintReport();
-    window.print();
+    setTimeout(() => window.print(), 150);
   };
   $("modelSearch").addEventListener("input", debounce(applyFilter, 200));
   $("seriesSearch").addEventListener("input", (e) => {
