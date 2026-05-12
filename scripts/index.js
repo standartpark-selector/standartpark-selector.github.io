@@ -294,13 +294,7 @@ function renderTable() {
       fmt(p.suction_diam_mm, 0) +
       "</td><td>" +
       fmt(p.discharge_diam_mm, 0) +
-      '</td><td><span class="pill ' +
-      (p.highlight ? "ok" : "warn") +
-      '">' +
-      (p._status || "—") +
-      '</span><div class="tiny">' +
-      (p._reason || "") +
-      "</div></td>";
+      "</td>";
     tr.onclick = () => selectPump(p);
     tb.appendChild(tr);
   }
