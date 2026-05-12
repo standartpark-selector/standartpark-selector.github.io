@@ -449,12 +449,7 @@ export function buildPrintReport() {
     prHeader(p, total, total) +
     '<h1 class="pr-h1">Размеры:</h1><div class="pr-dim-grid"><div class="pr-drawing">' +
     (drawing ? '<img src="' + drawing + '">' : "") +
-    '</div><table class="pr-dim-table"><tr><th colspan="2">Номинальная точка</th></tr>' +
-    dimRows
-      .slice(0, 3)
-      .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
-      .join("") +
-    '<tr><th colspan="2">Габаритные размеры (мм)</th></tr>' +
+    '</div><table class="pr-dim-table"><tr><th colspan="2">Габаритные размеры (мм)</th></tr>' +
     dimRows
       .slice(3, 8)
       .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
