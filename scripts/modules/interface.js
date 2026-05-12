@@ -445,7 +445,7 @@ export function buildPrintReport() {
     ["D3 — Ø патрубка (DN)", prVal(r.D3 || r.DN_label)],
   ];
   pages +=
-    '<section class="pr-page">' +
+    '<section class="pr-page' + (couplingImg ? ' pr-page--coupling' : '') + '">' +
     prHeader(p, total, total) +
     '<h1 class="pr-h1">Размеры:</h1><div class="pr-dim-grid"><div class="pr-drawing">' +
     (drawing ? '<img src="' + drawing + '">' : "") +
