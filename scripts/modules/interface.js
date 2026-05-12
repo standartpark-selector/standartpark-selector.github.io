@@ -3,7 +3,7 @@ import { reportInfo } from "../data/config.js";
 import { $, normNum, esc, fmt } from "./utils.js";
 import { selected } from "../index.js";
 import { IMAGES } from "../data/assets.js";
-import { interp, findOP, imageFor } from "./calculates.js";
+import { interp, findOP, imageFor, seriesOf } from "./calculates.js";
 import { SERIES_GROUPS } from "../data/catalog.js";
 export function loadReportInfo() {
   try {
@@ -306,8 +306,37 @@ export function buildPrintReport() {
   const photo = imageFor("photos", p),
     drawing = imageFor("drawings", p),
     chart = $("chart").toDataURL("image/png");
-  const series = (p.series || "").toUpperCase();
-  const showWiring = !["WQ", "WQD", "WQK", "DGWQ"].includes(series);
+  const series = (p.series || seriesOf(p.model) || "").toUpperCase();
+  const showWiring = !["WQ", "WQD", "WQK", "DGWQ", "DGWQD"].includes(series);
+  const SERIES_DESC = {
+    WQ:    "Погружной канализационный насос. Перекачивает сточные воды с твёрдыми частицами и волокнами. Установка погружная на авто-муфте или подъёмной цепи. IP68.",
+    WQD:   "Погружной канализационный насос двухполюсного исполнения (2P). Перекачивает сточные воды с твёрдыми включениями. Установка на авто-муфте. IP68.",
+    WQK:   "Погружной канализационный насос с режущим механизмом. Измельчает волокнистые включения перед перекачкой. IP68.",
+    DGWQ:  "Погружной дренажный насос. Перекачивает чистую воду и воду с небольшим содержанием примесей. Применяется в дренажных системах, подвалах, колодцах.",
+    DGWQD: "Погружной дренажный насос (двухполюсное исполнение). Компактный, для дренажных систем и затопленных помещений.",
+    IRG:   "Одноступенчатый вертикальный инлайн-насос. Фланцевое подключение в разрыв трубопровода. Для систем водоснабжения, отопления и промышленного водооборота. Стандарт GB/T 5657.",
+    ISW:   "Горизонтальный одноступенчатый инлайн-насос. Аналог IRG, горизонтальное расположение. Для систем отопления, водоснабжения и кондиционирования.",
+    ISG:   "Вертикальный одноступенчатый инлайн-насос повышенной производительности. Для систем водоснабжения и промышленного применения.",
+    TD:    "Вертикальный одноступенчатый инлайн-насос компактной конструкции. Прямое фланцевое соединение с трубопроводом. Для систем HVAC, водоснабжения и промышленного применения.",
+    CDL:   "Многоступенчатый вертикальный центробежный насос (нержавеющий рабочий орган). Для систем водоснабжения, пожаротушения, повышения давления.",
+    CDLF:  "Многоступенчатый вертикальный центробежный насос (полностью из нержавеющей стали). Для пищевой промышленности, систем водоснабжения и повышения давления.",
+    YST:   "Погружной трубчатый насос для скважин. Узкий корпус для вертикальных скважин. Для водоснабжения из глубоких скважин.",
+    ZW:    "Самовсасывающий канализационный насос. Не требует заливки перед пуском. Перекачивает сточные воды с твёрдыми включениями без подтопления насоса.",
+    MHI:   "Многоступенчатый горизонтальный насос с нержавеющим рабочим органом. Для бытового водоснабжения, орошения и систем повышения давления.",
+    CMI:   "Поверхностный центробежный насос. Для промышленных и бытовых систем водоснабжения.",
+  };
+  const SUBMERSIBLE = new Set(["WQ","WQD","WQK","DGWQ","DGWQD"]);
+  const seriesDesc = SERIES_DESC[series] || "";
+  let couplingImg = "";
+  let dn = "";
+  if (SUBMERSIBLE.has(series)) {
+    const dnMatch = p.model.match(/^(\d+)/);
+    if (dnMatch) {
+      dn = dnMatch[1];
+      const dnKey = "DN" + dn + ".png";
+      couplingImg = (IMAGES.couplings && IMAGES.couplings[dnKey]) || "";
+    }
+  }
   const total = (n > 1 ? 3 : 2) + 1;
   let pages = "";
   pages +=
@@ -317,9 +346,11 @@ export function buildPrintReport() {
     (photo ? '<img src="' + photo + '">' : "") +
     '</div></div><div class="pr-cell"><b>' +
     esc(p.model) +
-    '</b><p class="pr-warning">Внимание:<br>Изображение продукта может отличаться от самого продукта</p></div><div class="pr-cell pr-desc"><b>Центробежный насос</b><div>Центробежный насос производства ' +
-    esc(r.manufacturer || "Yoking pump industry CO., LTD") +
-    ".</div></div></div>" +
+    '</b><p class="pr-warning">Внимание:<br>Изображение продукта может отличаться от самого продукта</p></div><div class="pr-cell pr-desc">' +
+    (seriesDesc
+      ? '<p class="pr-series-desc">' + esc(seriesDesc) + "</p>"
+      : '<b>Центробежный насос</b><div>Центробежный насос производства ' + esc(r.manufacturer || "Yoking pump industry CO., LTD") + ".</div>") +
+    '</div></div>' +
     prRows("Заданная рабочая точка", [
       [
         "Расход, м³/ч (л/с)",
@@ -436,7 +467,7 @@ export function buildPrintReport() {
     "</table></div>" +
     (showWiring
       ? '<div class="pr-conn"><h3>Схема подключений:</h3><div class="pr-conn-grid"><div class="pr-conn-box">Y<span>«звезда» при мощности до 4 кВт</span></div><div class="pr-conn-box">△<span>«треугольник» при мощности от 5,5 кВт</span></div><div class="pr-conn-box">Y&nbsp;&nbsp;△<span>частотный преобразователь или плавный пуск</span></div></div></div>'
-      : "") +
+      : (couplingImg ? '<div class="pr-coupling"><h3>Чертёж муфты DN' + esc(dn) + ':</h3><img class="pr-coupling-img" src="' + couplingImg + '"></div>' : "")) +
     "</section>";
   box.innerHTML = pages;
 }
