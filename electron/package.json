@@ -1,0 +1,46 @@
+{
+  "name": "standartpark-pump-selector",
+  "version": "1.0.0",
+  "description": "Standartpark — конфигуратор насосов",
+  "author": "Standartpark",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^41.6.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "ru.standartpark.pumpselector",
+    "productName": "Standartpark Конфигуратор",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "icons/logo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": ["ru_RU"],
+      "language": "1049"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] },
+        { "target": "zip", "arch": ["arm64", "x64"] }
+      ],
+      "icon": "icons/logo.icns"
+    }
+  }
+}
