@@ -398,7 +398,7 @@ export function buildPrintReport() {
       ["Номинальная скорость (об/мин)", prVal(r.motor_rpm)],
       ["Допустимое напряжение (В)", prVal(r.motor_voltage_v)],
       ["Защита", prVal(r.motor_protection)],
-      ["Кабель, n×мм²", prVal(r.motor_cable) + (r.motor_cable ? " (стандартная длина 8 м, опциональное увеличение указано в КП)" : "")],
+      ["Кабель, n×мм² (стандартная длина 8 м, опциональное увеличение указано в КП)", prVal(r.motor_cable)],
     ]) +
     prRows("Уплотнение", [["Торцевое уплотнение", prVal(r.seal_type)]]) +
     prRows("Дополнительно", [
