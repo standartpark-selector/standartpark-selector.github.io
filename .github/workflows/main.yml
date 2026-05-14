@@ -1,0 +1,68 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare app folder
+        shell: bash
+        run: |
+          mkdir -p electron/app
+          cp -r index.html scripts style img electron/app/
+
+      - name: Install dependencies
+        working-directory: electron
+        run: npm install
+
+      - name: Build Windows
+        working-directory: electron
+        run: npm run dist -- --win
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PumpSelector-Windows
+          path: |
+            electron/dist/*.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare app folder
+        run: |
+          mkdir -p electron/app
+          cp -r index.html scripts style img electron/app/
+
+      - name: Install dependencies
+        working-directory: electron
+        run: npm install
+
+      - name: Build macOS
+        working-directory: electron
+        run: npm run dist -- --mac
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PumpSelector-macOS
+          path: |
+            electron/dist/*.dmg
+            electron/dist/*.zip
