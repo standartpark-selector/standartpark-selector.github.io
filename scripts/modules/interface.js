@@ -364,6 +364,8 @@ export function buildPrintReport() {
         esc(fmt(op.q * n, 1)) + " (" + esc(fmt((op.q * n) / 3.6, 1)) + ")",
       ],
       ["Напор, м", esc(fmt(op.h, 1))],
+      ["Ток, А", op.i ? prNum(op.i, 1) : "—"],
+      ["КПД, %", op.eta ? prNum(op.eta * 100, 1) : "—"],
     ]) +
     prRows("Материалы", [
       ["Рабочее колесо", prVal(r.mat_impeller)],
@@ -396,7 +398,7 @@ export function buildPrintReport() {
       ["Номинальная скорость (об/мин)", prVal(r.motor_rpm)],
       ["Допустимое напряжение (В)", prVal(r.motor_voltage_v)],
       ["Защита", prVal(r.motor_protection)],
-      ["Кабель, n×мм²", prVal(r.motor_cable)],
+      ["Кабель, n×мм²", prVal(r.motor_cable) + (r.motor_cable ? " (стандартная длина 8 м, опциональное увеличение указано в КП)" : "")],
     ]) +
     prRows("Уплотнение", [["Торцевое уплотнение", prVal(r.seal_type)]]) +
     prRows("Дополнительно", [

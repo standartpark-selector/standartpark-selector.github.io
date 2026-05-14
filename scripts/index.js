@@ -613,13 +613,29 @@ function draw() {
     ctx.setLineDash([4, 4]);
     line(X(gq), Y(op.h), X(gq), T + H);
     ctx.setLineDash([]);
-    ctx.fillStyle = "#101828";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText(
-      "ОП: Q=" + gq.toFixed(1) + " H=" + op.h.toFixed(1),
-      Math.min(X(gq) + 9, L + W - 150),
-      Math.max(T + 18, Y(op.h) - 8),
-    );
+    // Легенда рабочей точки
+    const bLines = [
+      "Рабочая точка:",
+      "Q = " + gq.toFixed(1) + " м³/ч",
+      "H = " + op.h.toFixed(1) + " м",
+      op.p > 0 ? "P = " + op.p.toFixed(2) + " кВт" : null,
+      op.i > 0 ? "I = " + op.i.toFixed(1) + " А"   : null,
+      op.eta > 0 ? "η = " + (op.eta * 100).toFixed(1) + " %" : null,
+    ].filter(Boolean);
+    const bLH = 17, bPad = 8, bW = 148, bH = bPad * 2 + bLines.length * bLH;
+    let bx = Math.min(X(gq) + 14, L + W - bW - 6);
+    let by = Math.max(T + 6, Y(op.h) - bH / 2);
+    if (by + bH > T + H - 4) by = T + H - bH - 4;
+    ctx.fillStyle = "rgba(255,255,255,0.93)";
+    ctx.fillRect(bx, by, bW, bH);
+    ctx.strokeStyle = "#b42318";
+    ctx.lineWidth = 1.3;
+    ctx.strokeRect(bx, by, bW, bH);
+    bLines.forEach((txt, idx) => {
+      ctx.fillStyle = "#101828";
+      ctx.font = idx === 0 ? "bold 12px Arial" : "12px Arial";
+      ctx.fillText(txt, bx + bPad, by + bPad + 13 + idx * bLH);
+    });
   }
   // паспортный номинал
   if (p.flow_m3h > 0 && p.head_m > 0) {
