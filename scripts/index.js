@@ -75,7 +75,43 @@ function bind() {
   });
   $("printBtn").onclick = () => {
     draw();
+    // Рисуем легенду рабочей точки только для PDF
+    if (selected) {
+      const qIn = normNum($("q").value), hIn = normNum($("h").value),
+            sh  = normNum($("staticHead").value),
+            n   = Math.max(1, Math.round(normNum($("numPumps").value) || 1));
+      if (qIn > 0 && hIn > 0) {
+        const op = findOP(selected, qIn / n, hIn, sh), gq = op.q * n;
+        const cv = $("chart"), ctx2 = cv.getContext("2d");
+        const L = 80, T = 40, W = cv.width - L - 85, H = cv.height - T - 60;
+        const maxQ = selected.curve?.at(-1)?.q || selected.flow_m3h * 1.3 || 10;
+        const maxH = selected.curve?.[0]?.h * 1.1 || selected.head_m * 1.3 || 10;
+        const X = q => L + (q / maxQ) * W, Y = h => T + H - (h / maxH) * H;
+        const bLines = [
+          "Рабочая точка:",
+          "Q = " + gq.toFixed(1) + " м³/ч",
+          "H = " + op.h.toFixed(1) + " м",
+          op.p > 0   ? "P = " + op.p.toFixed(2) + " кВт"        : null,
+          op.i > 0   ? "I = " + op.i.toFixed(1) + " А"           : null,
+          op.eta > 0 ? "η = " + (op.eta * 100).toFixed(1) + " %" : null,
+        ].filter(Boolean);
+        const bLH = 17, bPad = 8, bW = 152, bH = bPad * 2 + bLines.length * bLH;
+        let bx = Math.min(X(gq) + 14, L + W - bW - 6);
+        let by = Math.max(T + 6, Y(op.h) - bH / 2);
+        if (by + bH > T + H - 4) by = T + H - bH - 4;
+        ctx2.fillStyle = "rgba(255,255,255,0.93)";
+        ctx2.fillRect(bx, by, bW, bH);
+        ctx2.strokeStyle = "#b42318"; ctx2.lineWidth = 1.3;
+        ctx2.strokeRect(bx, by, bW, bH);
+        bLines.forEach((txt, idx) => {
+          ctx2.fillStyle = "#101828";
+          ctx2.font = idx === 0 ? "bold 12px Arial" : "12px Arial";
+          ctx2.fillText(txt, bx + bPad, by + bPad + 13 + idx * bLH);
+        });
+      }
+    }
     buildPrintReport();
+    draw(); // восстанавливаем canvas без легенды
     setTimeout(() => window.print(), 150);
   };
   $("modelSearch").addEventListener("input", debounce(applyFilter, 200));
@@ -613,29 +649,13 @@ function draw() {
     ctx.setLineDash([4, 4]);
     line(X(gq), Y(op.h), X(gq), T + H);
     ctx.setLineDash([]);
-    // Легенда рабочей точки
-    const bLines = [
-      "Рабочая точка:",
-      "Q = " + gq.toFixed(1) + " м³/ч",
-      "H = " + op.h.toFixed(1) + " м",
-      op.p > 0 ? "P = " + op.p.toFixed(2) + " кВт" : null,
-      op.i > 0 ? "I = " + op.i.toFixed(1) + " А"   : null,
-      op.eta > 0 ? "η = " + (op.eta * 100).toFixed(1) + " %" : null,
-    ].filter(Boolean);
-    const bLH = 17, bPad = 8, bW = 148, bH = bPad * 2 + bLines.length * bLH;
-    let bx = Math.min(X(gq) + 14, L + W - bW - 6);
-    let by = Math.max(T + 6, Y(op.h) - bH / 2);
-    if (by + bH > T + H - 4) by = T + H - bH - 4;
-    ctx.fillStyle = "rgba(255,255,255,0.93)";
-    ctx.fillRect(bx, by, bW, bH);
-    ctx.strokeStyle = "#b42318";
-    ctx.lineWidth = 1.3;
-    ctx.strokeRect(bx, by, bW, bH);
-    bLines.forEach((txt, idx) => {
-      ctx.fillStyle = "#101828";
-      ctx.font = idx === 0 ? "bold 12px Arial" : "12px Arial";
-      ctx.fillText(txt, bx + bPad, by + bPad + 13 + idx * bLH);
-    });
+    ctx.fillStyle = "#101828";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText(
+      "ОП: Q=" + gq.toFixed(1) + " H=" + op.h.toFixed(1),
+      Math.min(X(gq) + 9, L + W - 150),
+      Math.max(T + 18, Y(op.h) - 8),
+    );
   }
   // паспортный номинал
   if (p.flow_m3h > 0 && p.head_m > 0) {
