@@ -803,16 +803,16 @@ canvas {
 
     .pr-chart-img {
         display: block;
-        width: 160mm;
-        height: 192mm;
+        width: 175mm;
+        height: 110mm;
         object-fit: fill;
         margin: 4mm auto 2mm
     }
 
     .pr-chart-wide {
         display: block;
-        width: 168mm;
-        height: 200mm;
+        width: 175mm;
+        height: 110mm;
         object-fit: fill;
         margin: 3mm auto
     }
