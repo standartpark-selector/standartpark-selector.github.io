@@ -397,8 +397,10 @@ export function buildPrintReport() {
       ["Частота мощности", prVal(r.motor_freq_hz, " Гц")],
       ["Номинальная скорость (об/мин)", prVal(r.motor_rpm)],
       ["Допустимое напряжение (В)", prVal(r.motor_voltage_v)],
-      ["Защита", prVal(r.motor_protection)],
-      ["Кабель, n×мм² (стандартная длина 8 м, опциональное увеличение указано в КП)", prVal(r.motor_cable)],
+      ...(SUBMERSIBLE.has(series) ? [
+        ["Защита", prVal(r.motor_protection)],
+        ["Кабель, n×мм² (стандартная длина 8 м, опциональное увеличение указано в КП)", prVal(r.motor_cable)],
+      ] : []),
     ]) +
     prRows("Уплотнение", [["Торцевое уплотнение", prVal(r.seal_type)]]) +
     prRows("Дополнительно", [
