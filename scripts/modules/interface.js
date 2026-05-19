@@ -443,6 +443,7 @@ export function buildPrintReport() {
     ["H — полная высота", prVal(r["H_габарит"] || r.H, " мм")],
     ["H1 — высота до патрубка", prVal(r.H1, " мм")],
     ["H2 — высота двигателя", prVal(r.H2, " мм")],
+    ["L — длина основания", prVal(r.L, " мм")],
     ["W — ширина основания", prVal(r.W, " мм")],
     ["D — диаметр патрубка", prVal(r.D || r.DN, " мм")],
     ["D1 — Ø окр. болтов", prVal(r.D1, " мм")],
@@ -456,7 +457,7 @@ export function buildPrintReport() {
     (drawing ? '<img src="' + drawing + '">' : "") +
     '</div><table class="pr-dim-table"><tr><th colspan="2">Габаритные размеры (мм)</th></tr>' +
     dimRows
-      .slice(3, 9)
+      .slice(3, 10)
       .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
       .join("") +
     '<tr><th colspan="2">Фланец патрубка (мм)</th></tr>' +
