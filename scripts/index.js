@@ -668,26 +668,8 @@ function draw() {
       Y(p.head_m) + 4,
     );
   }
-  const c0 = coeff(p.raw, "curve_h");
   ctx.fillStyle = "#101828";
   ctx.font = "bold 15px Arial";
   ctx.fillText(p.model, L + W - 250, T + 20);
-  ctx.fillStyle = "#667085";
-  ctx.font = "11px Arial";
-  ctx.fillText(
-    "Оси: 0…" +
-      maxQ.toFixed(0) +
-      " м³/ч, 0…" +
-      maxH.toFixed(0) +
-      " м. Источник: " +
-      (p.curve_source || "CSV") +
-      "; H(Q)= " +
-      c0
-        .map((v, i) => (v ? "h" + i + "=" + v.toPrecision(4) : ""))
-        .filter(Boolean)
-        .join(", "),
-    L,
-    T + H + 43,
-  );
 }
 init();

@@ -162,7 +162,7 @@ export function prRows(title, rows) {
   );
 }
 
-export function drawParallelCanvas(p, n, q, h, sh) {
+export function drawParallelCanvas(p, n, q, h, sh, title = "Параллельная работа насосов") {
   const COLORS = ["#1769e0", "#d92d20", "#16a34a", "#ca8a04", "#9333ea", "#0891b2", "#be185d"];
   const canvas = document.createElement("canvas");
   canvas.width = 1050;
@@ -223,7 +223,7 @@ export function drawParallelCanvas(p, n, q, h, sh) {
     ctx.fillText(hv.toFixed(maxH < 20 ? 1 : 0), 28, Y(hv) + 4);
 
   ctx.fillStyle = "#101828"; ctx.font = "bold 13px Arial";
-  ctx.fillText("Параллельная работа насосов", L + 10, T + 22);
+  ctx.fillText(title, L + 10, T + 22);
 
   const endPoints = [];
   for (let k = 1; k <= n; k++) {
@@ -305,7 +305,9 @@ export function buildPrintReport() {
     op = q && h ? findOP(p, q / n, h, sh) : interp(p, p.flow_m3h);
   const photo = imageFor("photos", p),
     drawing = imageFor("drawings", p),
-    chart = $("chart").toDataURL("image/png");
+    chart = n > 1
+      ? drawParallelCanvas(p, 1, q / n, h, sh, "Гидравлические кривые")
+      : $("chart").toDataURL("image/png");
   const series = (p.series || seriesOf(p.model) || "").toUpperCase();
   const showWiring = !["WQ", "WQD", "WQK", "DGWQ", "DGWQD"].includes(series);
   const SERIES_DESC = {
@@ -414,9 +416,9 @@ export function buildPrintReport() {
     '<h1 class="pr-h1">Гидравлические кривые / Описание</h1><img class="pr-chart-img" src="' +
     chart +
     '"><div class="pr-workpoint"><b>Условная рабочая точка:</b><br>Q = ' +
-    esc(fmt(q, 1)) +
+    esc(fmt(q / n, 1)) +
     " м³/ч (" +
-    esc(fmt(q / 3.6, 1)) +
+    esc(fmt(q / n / 3.6, 1)) +
     " л/с) &nbsp;&nbsp; H = " +
     esc(fmt(h, 1)) +
     " м</div></section>";
