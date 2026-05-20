@@ -449,6 +449,9 @@ export function buildPrintReport() {
     ["D1 — Ø окр. болтов", prVal(r.D1, " мм")],
     ["D2 — уплотн. проточка", prVal(r.D2, " мм")],
     ["D3 — Ø патрубка (DN)", prVal(r.D3 || r.DN_label)],
+    ...(SUBMERSIBLE.has(series) ? [
+      ["Ø частиц (макс.)", prVal(r.particle_d, " мм")],
+    ] : []),
   ];
   pages +=
     '<section class="pr-page' + (couplingImg ? ' pr-page--coupling' : '') + '">' +
@@ -462,7 +465,7 @@ export function buildPrintReport() {
       .join("") +
     '<tr><th colspan="2">Фланец патрубка (мм)</th></tr>' +
     dimRows
-      .slice(9)
+      .slice(10)
       .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
       .join("") +
     "</table></div>" +
