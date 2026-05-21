@@ -861,6 +861,13 @@ canvas {
         padding: 1mm 2mm
     }
 
+    .pr-dim-note {
+        font-size: 11pt;
+        color: #667085;
+        padding: 4mm 0;
+        font-style: italic;
+    }
+
     .pr-conn {
         position: absolute;
         left: 0;

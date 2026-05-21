@@ -455,22 +455,24 @@ export function buildPrintReport() {
       ["Ø частиц (макс.)", prVal(r.particle_d, " мм")],
     ] : []),
   ];
+  const gabarRows  = dimRows.slice(3, 10).filter(x => x[1] !== "—");
+  const flanecRows = dimRows.slice(10).filter(x => x[1] !== "—");
+  const hasDimData = gabarRows.length > 0 || flanecRows.length > 0;
   pages +=
     '<section class="pr-page' + (couplingImg ? ' pr-page--coupling' : '') + '">' +
     prHeader(p, total, total) +
     '<h1 class="pr-h1">Размеры:</h1><div class="pr-dim-grid"><div class="pr-drawing">' +
     (drawing ? '<img src="' + drawing + '">' : "") +
-    '</div><table class="pr-dim-table"><tr><th colspan="2">Габаритные размеры (мм)</th></tr>' +
-    dimRows
-      .slice(3, 10)
-      .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
-      .join("") +
-    '<tr><th colspan="2">Фланец патрубка (мм)</th></tr>' +
-    dimRows
-      .slice(10)
-      .map((x) => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>")
-      .join("") +
-    "</table></div>" +
+    '</div>' +
+    (hasDimData
+      ? '<table class="pr-dim-table">' +
+        (gabarRows.length ? '<tr><th colspan="2">Габаритные размеры (мм)</th></tr>' +
+          gabarRows.map(x => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>").join("") : "") +
+        (flanecRows.length ? '<tr><th colspan="2">Фланец патрубка (мм)</th></tr>' +
+          flanecRows.map(x => "<tr><td>" + x[0] + "</td><td><b>" + x[1] + "</b></td></tr>").join("") : "") +
+        '</table>'
+      : '<p class="pr-dim-note">Размеры уточняйте у менеджера</p>') +
+    '</div>' +
     (showWiring
       ? '<div class="pr-conn"><h3>Схема подключений:</h3><div class="pr-conn-grid"><div class="pr-conn-box">Y<span>«звезда» при мощности до 4 кВт</span></div><div class="pr-conn-box">△<span>«треугольник» при мощности от 5,5 кВт</span></div><div class="pr-conn-box">Y&nbsp;&nbsp;△<span>частотный преобразователь или плавный пуск</span></div></div></div>'
       : (couplingImg ? '<div class="pr-coupling"><h3>Чертёж муфты DN' + esc(dn) + ':</h3><img class="pr-coupling-img" src="' + couplingImg + '"></div>' : "")) +
