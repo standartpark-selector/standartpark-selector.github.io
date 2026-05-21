@@ -96,9 +96,10 @@ function bind() {
           op.eta > 0 ? "η = " + (op.eta * 100).toFixed(1) + " %" : null,
         ].filter(Boolean);
         const bLH = 17, bPad = 8, bW = 152, bH = bPad * 2 + bLines.length * bLH;
-        let bx = Math.min(X(gq) + 14, L + W - bW - 6);
-        let by = Math.max(T + 6, Y(op.h) - bH / 2);
-        if (by + bH > T + H - 4) by = T + H - bH - 4;
+        const bx = L + W - bW - 6;
+        const by = Y(op.h) > T + H / 2
+          ? T + 6              // рабочая точка внизу → легенда вверху-справа
+          : T + H - bH - 4;   // рабочая точка вверху → легенда внизу-справа
         ctx2.fillStyle = "rgba(255,255,255,0.93)";
         ctx2.fillRect(bx, by, bW, bH);
         ctx2.strokeStyle = "#b42318"; ctx2.lineWidth = 1.3;
