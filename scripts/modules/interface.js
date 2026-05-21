@@ -437,17 +437,18 @@ export function buildPrintReport() {
       esc(fmt(h, 1)) +
       ' м</div><div class="pr-parallel-note">Компоновка страницы выполнена под паспортный отчёт. Алгоритм построения кривых не изменён.</div></section>';
   }
+  const isInlineSchema = r.dimension_schema === "inline";
   const dimRows = [
     ["Подача Q", esc(fmt(q, 1)) + " м³/ч"],
     ["Напор H", esc(fmt(h, 1)) + " м"],
     ["Мощность", prNum(p.power_kw, 1, " кВт")],
     ["B — ширина патрубка", prVal(r.B, " мм")],
-    ["H — полная высота", prVal(r["H_габарит"] || r.H, " мм")],
+    ["H — полная высота", prVal(r["H_габарит"], " мм")],
     ["H1 — высота до патрубка", prVal(r.H1, " мм")],
     ["H2 — высота двигателя", prVal(r.H2, " мм")],
     ["L — длина основания", prVal(r.L, " мм")],
     ["W — ширина основания", prVal(r.W, " мм")],
-    ["D — диаметр патрубка", prVal(r.D || r.DN, " мм")],
+    ["D — диаметр патрубка", prVal(r.D, " мм")],
     ["D1 — Ø окр. болтов", prVal(r.D1, " мм")],
     ["D2 — уплотн. проточка", prVal(r.D2, " мм")],
     ["D3 — Ø патрубка (DN)", prVal(r.D3 || r.DN_label)],
@@ -457,7 +458,11 @@ export function buildPrintReport() {
   ];
   const gabarRows  = dimRows.slice(3, 10).filter(x => x[1] !== "—");
   const flanecRows = dimRows.slice(10).filter(x => x[1] !== "—");
-  const hasDimData = gabarRows.length > 0 || flanecRows.length > 0;
+  // For inline-schema pumps (IRG/ISW), standard fields contain hydraulic params,
+  // not physical dimensions — suppress table until inline_* fields are populated
+  const hasDimData = isInlineSchema
+    ? !!(r.inline_H || r.inline_L || r.inline_h)
+    : (gabarRows.length > 0 || flanecRows.length > 0);
   pages +=
     '<section class="pr-page' + (couplingImg ? ' pr-page--coupling' : '') + '">' +
     prHeader(p, total, total) +
