@@ -437,7 +437,8 @@ export function buildPrintReport() {
       esc(fmt(h, 1)) +
       ' м</div><div class="pr-parallel-note">Компоновка страницы выполнена под паспортный отчёт. Алгоритм построения кривых не изменён.</div></section>';
   }
-  const isInlineSchema = r.dimension_schema === "inline";
+  const HIDE_DIM_SERIES = new Set(["TD", "CDLF"]);
+  const isInlineSchema = r.dimension_schema === "inline" || HIDE_DIM_SERIES.has(series);
   const dimRows = [
     ["Подача Q", esc(fmt(q, 1)) + " м³/ч"],
     ["Напор H", esc(fmt(h, 1)) + " м"],
